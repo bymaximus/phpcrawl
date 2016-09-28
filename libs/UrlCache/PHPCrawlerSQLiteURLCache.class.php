@@ -117,15 +117,20 @@ class PHPCrawlerSQLiteURLCache extends PHPCrawlerURLCacheBase
     $this->createPreparedInsertStatement();
                                                                     
     // Insert URL via prepared statement
-    $this->PreparedInsertStatement->execute(array(":priority_level" => $priority_level,
-                                                  ":distinct_hash" => $map_key,
-                                                  ":link_raw" => $UrlDescriptor->link_raw,
-                                                  ":linkcode" => $UrlDescriptor->linkcode,
-                                                  ":linktext" => $UrlDescriptor->linktext,
-                                                  ":refering_url" => $UrlDescriptor->refering_url,
-                                                  ":url_rebuild" => $UrlDescriptor->url_rebuild,
-                                                  ":is_redirect_url" => $UrlDescriptor->is_redirect_url,
-                                                  ":url_link_depth" => $UrlDescriptor->url_link_depth));
+	try {
+		$this->PreparedInsertStatement->execute(array(":priority_level" => $priority_level,
+													  ":distinct_hash" => $map_key,
+													  ":link_raw" => $UrlDescriptor->link_raw,
+													  ":linkcode" => $UrlDescriptor->linkcode,
+													  ":linktext" => $UrlDescriptor->linktext,
+													  ":refering_url" => $UrlDescriptor->refering_url,
+													  ":url_rebuild" => $UrlDescriptor->url_rebuild,
+													  ":is_redirect_url" => $UrlDescriptor->is_redirect_url,
+													  ":url_link_depth" => $UrlDescriptor->url_link_depth));
+	} catch (Exception $e) {
+		$this->createPreparedInsertStatement(true);
+		$this->addURL($UrlDescriptor);		
+	}
   }
   
   /**
@@ -234,7 +239,7 @@ class PHPCrawlerSQLiteURLCache extends PHPCrawlerURLCacheBase
     
     $this->PDO->exec("PRAGMA journal_mode = OFF");
     
-    $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+    $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $this->PDO->setAttribute(PDO::ATTR_TIMEOUT, 100);
     
     if ($create_tables == true)
@@ -267,10 +272,11 @@ class PHPCrawlerSQLiteURLCache extends PHPCrawlerURLCacheBase
   
   /**
    * Creates the prepared statement for insterting URLs into database (if not done yet)
+   * @param boolean $recreate if TRUE, the prepared statement will get (re)created nevertheless
    */
-  protected function createPreparedInsertStatement()
+  protected function createPreparedInsertStatement($recreate = false)
   {
-    if ($this->PreparedInsertStatement == null)
+    if ($this->PreparedInsertStatement == null || $recreate == true)
     {
       // Prepared statement for URL-inserts                                      
       $this->PreparedInsertStatement = $this->PDO->prepare("INSERT OR IGNORE INTO urls (priority_level, distinct_hash, link_raw, linkcode, linktext, refering_url, url_rebuild, is_redirect_url, url_link_depth)
