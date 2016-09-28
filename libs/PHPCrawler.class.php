@@ -332,7 +332,7 @@ class PHPCrawler
       $this->DocumentInfoQueue = new PHPCrawlerDocumentInfoQueue($this->working_directory."doc_queue.db3", true);
     
     // Set tmp-file for PageRequest
-    $this->PageRequest->setTmpFile($this->working_directory."phpcrawl_".getmypid().".tmp");
+    $this->PageRequest->setWorkingDirectory($this->working_directory."phpcrawl_".getmypid().".tmp");
     
     // Pass url-priorities to link-cache
     $this->LinkCache->addLinkPriorities($this->link_priority_array);
@@ -1734,7 +1734,7 @@ class PHPCrawler
    */
   public function setWorkingDirectory($directory)
   {
-    if (is_writeable($this->working_base_directory))
+    if (is_writeable($directory))
     {
       $this->working_base_directory = $directory;
       return true;
