@@ -58,7 +58,9 @@ class PHPCrawlerSQLiteCookieCache extends PHPCrawlerCookieCacheBase
     
     for ($x=0; $x<count($cookies); $x++)
     {
-      $this->addCookie($cookies[$x]);
+		if ($cookies[$x] instanceof PHPCrawlerCookieDescriptor) {
+			$this->addCookie($cookies[$x]);
+		}
     }
     
     $this->PDO->exec("COMMIT");

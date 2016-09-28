@@ -463,7 +463,7 @@ class PHPCrawlerUtils
           if (filetype($dir.DIRECTORY_SEPARATOR.$object) == "dir")
             self::rmDir($dir.DIRECTORY_SEPARATOR.$object);
           else
-            unlink($dir.DIRECTORY_SEPARATOR.$object);
+            @unlink($dir.DIRECTORY_SEPARATOR.$object);
         }
       }
       reset($objects);

@@ -128,6 +128,9 @@ class PHPCrawlerCookieDescriptor
   public static function getFromHeaderLine($header_line, $source_url)
   {
     $parts = explode(";", trim($header_line));
+    if (! $parts) {
+        return null;
+    }	
     
     $name = "";
     $value = "";
@@ -137,8 +140,15 @@ class PHPCrawlerCookieDescriptor
     
     // Name and value
     preg_match("#([^=]*)=(.*)#", $parts[0], $match);
-    $name = trim($match[1]);
-    $value = trim($match[2]);
+	if ($match &&
+		isset($match[1]) &&
+		isset($match[2])
+	) {
+		$name = trim($match[1]);
+		$value = trim($match[2]);
+	} else {
+		return null;
+	}
     
     // Path and Expires
     for ($x=1; $x<count($parts); $x++)

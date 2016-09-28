@@ -301,7 +301,7 @@ class PHPCrawlerSQLiteURLCache extends PHPCrawlerURLCacheBase
     $this->PDO = null;
     $this->PreparedInsertStatement = null;
     
-    unlink($this->sqlite_db_file);
+    @unlink($this->sqlite_db_file);
   }
 }
 ?>

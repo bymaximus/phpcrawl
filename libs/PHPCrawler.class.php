@@ -1990,7 +1990,7 @@ class PHPCrawler
     $this->createWorkingDirectory();
     
     // Unlinks pids file in working-dir (because all PIDs will change in new process)
-    if (file_exists($this->working_directory."pids")) unlink($this->working_directory."pids");
+    if (file_exists($this->working_directory."pids")) @unlink($this->working_directory."pids");
   }
   
   /**
